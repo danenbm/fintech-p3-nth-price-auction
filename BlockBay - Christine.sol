@@ -2,21 +2,15 @@ pragma solidity ^0.5.0;
 
 import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/release-v2.5.0/contracts/token/ERC20/ERC20.sol";
 import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/release-v2.5.0/contracts/token/ERC20/ERC20Detailed.sol";
+import "github.com/OpenZeppelin/openzeppelin-contracts/blob/release-v2.5.0/contracts/math/SafeMath.sol";
 
 
 contract BlockBayToken is ERC20, ERC20Detailed {
-    //using SafeMath for uint;
+    using SafeMath for uint;
 
-    address payable owner = msg.sender;
-    
-    struct ListedProduct {
-        string name;
-        string seller;
-        uint256 priceInBBT;
-    }
-
-    mapping(uint256 => ListedProduct) public itemSearch;
-    
+    address payable owner;
+    //1 BBT = 1000 Wei
+    uint public exchangeRate = 1000
 
     modifier onlyOwner {
         require(msg.sender == owner, "You do not have permission to mint these tokens!");
@@ -25,14 +19,39 @@ contract BlockBayToken is ERC20, ERC20Detailed {
 
     constructor(uint initial_supply) ERC20Detailed("BlockBayToken", "BBT", 18) public {
         owner = msg.sender;
-        _mint(owner, initial_supply);
+        _mint(owner, initial_supply);    // could be minted at deploy or once tokens are purchased
     }
 
-    function mint(address recipient, uint256 amount) public onlyOwner {
+    function mint(address recipient, uint amount) public onlyOwner {
         _mint(recipient, amount);
-
-
-
+    }     
+    
+    function purchase() public payable {
+        uint amount = msg.value.mul(exchangeRate);
+        // mint tokens to their address automatically
+        _mint(msg.sender, amount);
+        balances[msg.sender] = balances[msg.sender].add(amount);
+        owner.transfer(msg.value);
     }
+
+  
+    //metadata for products
+    struct ListedProduct {
+        string name;
+        string seller;
+        uint priceInBBT;
+        uint QRCode;
+    }
+    
+    mapping(address => uint) balances;
+    mapping(uint => ListedProduct) public itemSearch;
+    
+    function getProduct(uint productID) public {
+        return itemSearch[productID]
+    }
+    
+    // need to save the product somehow
+    function purchaseItem
+        
 }
 
