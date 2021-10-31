@@ -45,7 +45,7 @@ contract NthPriceAuction{
 
     // Function to create an auction of `numItems` items,
     // for 'durationSeconds' seconds, on behalf of the
-    // beneficiary adddress of `seller`.
+    // beneficiary address of `seller`.
     constructor (
         address payable seller,
         uint durationSeconds,
@@ -119,7 +119,16 @@ contract NthPriceAuction{
         //emit AuctionEnded(winners, ___);
 
         // Transfer Ether to the beneficiary for the top N bids.
-        for (uint i = 0; i < topNBids.length; i++) { 
+        for (uint i = 0; i < topNBids.length; i++) {
+            // TODO: This needs to actually just only transfer the
+            // lowest value from the top N bids, i.e.,
+            // topNBids[smallestTopNBidsIndex].value,
+            // for each winner.
+            //
+            // The remainder between what the winner
+            // bid and that smallest of the top bids value, should
+            // be refunded by adding that remainder to the
+            // bidsToReturn mapping.
             sellerAddress.transfer(topNBids[i].value);
         }
     }
