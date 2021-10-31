@@ -20,6 +20,7 @@ contract NthPriceAuction{
     struct Bid {
         address bidder;
         uint value;
+        uint256 timestamp;
     }
 
     // List of the top N bids.
@@ -65,7 +66,7 @@ contract NthPriceAuction{
         // TODO: Does using payable mean it requires non-zero Ether to be sent?
 
         // Save bid parameters in a struct object.
-        Bid memory newBid = Bid(msg.sender, msg.value);
+        Bid memory newBid = Bid(msg.sender, msg.value, block.timestamp);
 
         if (topNBids.length < numItemsToAuction) {
             // If there's any space in the list, add the new
@@ -75,6 +76,9 @@ contract NthPriceAuction{
             // If the new bid is greater than the current smallest of
             // the top N bids, add the current smallest of the top N bids
             // address and value to the bidsToReturn mapping.
+
+            // TODO this does not currently deal with if there are duplicates
+            // in the list.  Needs to be modified to also check timestamp.
             bidsToReturn[topNBids[smallestTopNBidsIndex].bidder]
                 += topNBids[smallestTopNBidsIndex].value;
         
