@@ -76,6 +76,7 @@ contract NthPriceAuction{
             // If the new bid is greater than the current smallest of
             // the top N bids, add the current smallest of the top N bids
             // address and value to the bidsToReturn mapping.
+            // TODO Should this be `+=` or just `=`.
             bidsToReturn[topNBids[smallestTopNBidsIndex].bidder]
                 += topNBids[smallestTopNBidsIndex].value;
         
@@ -131,6 +132,7 @@ contract NthPriceAuction{
         // to the bidsToReturn mapping.
         for (uint i = 0; i < topNBids.length; i++) {
             uint remainderToReturn = topNBids[i].value - topNBids[smallestTopNBidsIndex].value;
+            // TODO Should this be `+=` or just `=`.
             bidsToReturn[topNBids[smallestTopNBidsIndex].bidder] += remainderToReturn;
         }
     }
