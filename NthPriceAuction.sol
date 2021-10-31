@@ -76,9 +76,6 @@ contract NthPriceAuction{
             // If the new bid is greater than the current smallest of
             // the top N bids, add the current smallest of the top N bids
             // address and value to the bidsToReturn mapping.
-
-            // TODO this does not currently deal with if there are duplicates
-            // in the list.  Needs to be modified to also check timestamp.
             bidsToReturn[topNBids[smallestTopNBidsIndex].bidder]
                 += topNBids[smallestTopNBidsIndex].value;
         
@@ -97,7 +94,11 @@ contract NthPriceAuction{
         // Find the new smallest of the top N bids.
         uint minIndex = 0;
         for (uint i = 1; i < topNBids.length; i++) {
-            if (topNBids[i].value < topNBids[minIndex].value) {
+            // Using less than or equal here so that if there are duplicates,
+            // the newer bid is the one that is set to be the minIndex,
+            // which means the newer bid will be overwritten by a new bid
+            // that outbids its value.
+            if (topNBids[i].value <= topNBids[minIndex].value) {
                 minIndex = i;
             }
         }
