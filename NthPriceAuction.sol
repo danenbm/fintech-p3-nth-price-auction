@@ -118,18 +118,20 @@ contract NthPriceAuction{
         // TODO: Emit events.
         //emit AuctionEnded(winners, ___);
 
-        // Transfer Ether to the beneficiary for the top N bids.
+        // Transfer Ether to the beneficiary, in the amount of
+        // the smallest of the top N bids times the number of
+        // bidders in the top N bids list.
+        if (topNBids.length > 0) {
+            uint amountToTransfer = topNBids[smallestTopNBidsIndex].value * topNBids.length;
+            sellerAddress.transfer(amountToTransfer);
+        }
+
+        // Add remainder between what each top N bidder bid, and
+        // the price they paid (which was the smallest of the top N bids),
+        // to the bidsToReturn mapping.
         for (uint i = 0; i < topNBids.length; i++) {
-            // TODO: This needs to actually just only transfer the
-            // lowest value from the top N bids, i.e.,
-            // topNBids[smallestTopNBidsIndex].value,
-            // for each winner.
-            //
-            // The remainder between what the winner
-            // bid and that smallest of the top bids value, should
-            // be refunded by adding that remainder to the
-            // bidsToReturn mapping.
-            sellerAddress.transfer(topNBids[i].value);
+            uint remainderToReturn = topNBids[i].value - topNBids[smallestTopNBidsIndex].value;
+            bidsToReturn[topNBids[smallestTopNBidsIndex].bidder] += remainderToReturn;
         }
     }
 
