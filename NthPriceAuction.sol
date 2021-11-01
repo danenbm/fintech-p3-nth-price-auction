@@ -68,7 +68,7 @@ contract NthPriceAuction{
     }
 
     // Payable function that allows someone to send Ether to make a bid.
-    function bid() public payable withinAuction {
+    function bid() public payable withinAuction returns (bool) {
         require(msg.value > 0, "Bid must be greater than 0");
         require(bidsMapping[msg.sender] == 0, "Sorry you can only bid once");
 
@@ -85,16 +85,18 @@ contract NthPriceAuction{
         } else if (newBid.value > topNBids[smallestTopNBidsIndex].value) {
             // If the new bid is greater than the current smallest of
             // the top N bids, add the current smallest of the top N bids
-            // address and value to the bidsToReturn mapping.
+            // address and bid value to the bidsToReturn mapping.
             bidsToReturn[topNBids[smallestTopNBidsIndex].bidder]
                 = topNBids[smallestTopNBidsIndex].value;
         
             // Replace the current smallest bid with this new one.
             topNBids[smallestTopNBidsIndex] = newBid;
         } else {
-            // If the bid does not make it into the top N list, then return
-            // the Ether to the bidder.
-            revert("Sorry you have been outbid.");
+            // If the bid does not make it into the top N list, put the
+            // bidder's address and bid value into the bidsToReturn mapping
+            // and return false.
+            bidsToReturn[msg.sender] = msg.value;
+            return false;
         }
 
         //TODO: Using minIndex because I think it is cheaper to update
@@ -116,6 +118,9 @@ contract NthPriceAuction{
         // Only after the loop is finished do we update the
         // storage variable.
         smallestTopNBidsIndex = minIndex;
+
+        // If the bidder made it into the top N list, return true.
+        return true;
     }
 
     function auctionEnd() public payable {
