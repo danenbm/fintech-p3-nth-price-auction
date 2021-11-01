@@ -31,7 +31,8 @@ contract NthPriceAuction{
     // Mapping to keep track of all bids that occurred.
     mapping(address => uint) bidsMapping;
 
-    // Mapping to bids to return to store bidders that did not win. 
+    // Mapping to store bids that did not win, for the purpose of returning
+    // to bidders after the auction ends.
     mapping(address => uint) bidsToReturn;
 
     // Modifier to ensure this action occurs within the timeframe of the auction.
