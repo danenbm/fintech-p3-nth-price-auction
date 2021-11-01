@@ -151,22 +151,16 @@ contract NthPriceAuction{
     // Function for users that did not win to use to receive their bids
     // back. Due to security concerns, it is better to let the bidders
     // withdraw themselves rather then automatically send to them.
-    function withdraw() public returns (bool) {
-         uint bidValue = bidsToReturn[msg.sender];
+    function withdraw() public {
+        require(bidsToReturn[msg.sender] > 0, "You don't have any funds to withdraw");
 
-         if (bidValue > 0){
+        // Send bid amount back to sender.
+        if (false == msg.sender.send(bidsToReturn[msg.sender])) {
+            // If it fails, revert so they can try again later.
+            revert("Transaction failed, please try again");
+        } else {
             // Set to zero to prevent multiple withdraws.
             bidsToReturn[msg.sender] = 0;
-            
-            // Send bid amount back to sender.  If it fails,
-            // put the bid amount back in the mapping for that
-            // sender.
-            if (false == msg.sender.send(bidValue)) {
-                bidsToReturn[msg.sender] = bidValue;
-                return false;
-            }
-         }
-
-         return true;
+        }
     }
 }
