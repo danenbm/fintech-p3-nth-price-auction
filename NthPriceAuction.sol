@@ -1,4 +1,6 @@
-pragma solidity ^0.5.0;
+// SPDX-License-Identifier: MIT
+
+pragma solidity ^0.8.0;
 
 // TODO: add safe math everywhere applicable.
 
@@ -56,7 +58,7 @@ contract NthPriceAuction{
         address payable seller,
         uint durationSeconds,
         uint numItems
-    ) public {
+    ) {
         require(numItems > 0);
 
         sellerAddress = seller;
@@ -160,7 +162,7 @@ contract NthPriceAuction{
         require(bidsToReturn[msg.sender] > 0, "You don't have any funds to withdraw");
 
         // Send bid amount back to sender.
-        if (false == msg.sender.send(bidsToReturn[msg.sender])) {
+        if (false == payable(msg.sender).send(bidsToReturn[msg.sender])) {
             // If it fails, revert so they can try again later.
             revert("Transaction failed, please try again");
         } else {
