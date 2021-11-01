@@ -44,6 +44,9 @@ contract NthPriceAuction{
     // Function to create an auction of `numItems` items,
     // for 'durationSeconds' seconds, on behalf of the
     // beneficiary address of `seller`.
+
+    // TODO: Add metadata for item to be auctioned.
+
     constructor (
         address payable seller,
         uint durationSeconds,
@@ -57,6 +60,8 @@ contract NthPriceAuction{
         numItemsToAuction = numItems;
         auctionEnded = false;
         smallestTopNBidsIndex = 0;
+
+        // TODO: Deploy token contract and mint numItemsToAuction tokens.
     }
 
     // Payable function that allows someone to send Ether to make a bid.
@@ -135,7 +140,11 @@ contract NthPriceAuction{
         for (uint i = 0; i < topNBids.length; i++) {
             uint remainderToReturn = topNBids[i].value.sub(topNBids[smallestTopNBidsIndex].value);
             bidsToReturn[topNBids[i].bidder] = remainderToReturn;
+
+            // TODO: Award a token to each winner.
         }
+
+        // TODO: Burn remaining tokens.
     }
 
     // Function for users that did not win to use to receive their bids
