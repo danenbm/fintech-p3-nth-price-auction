@@ -2,15 +2,15 @@
 
 pragma solidity ^0.8.0;
 
-// TODO: add safe math everywhere applicable.
+import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/release-v4.4/contracts/utils/math/SafeMath.sol";
 
 contract NthPriceAuction{
+    using SafeMath for uint;
+
     // Beneficiary of the auction.
     address payable public sellerAddress;
-    // Time the auction starts.
-    uint256 public auctionStartTime;
     // Time the auction ends.
-    uint256 public auctionEndTime;
+    uint public auctionEndTime;
     // Number of items to auction and thus max number of winners.
     uint numItemsToAuction;
     // Set to true when auction ends.
@@ -22,7 +22,7 @@ contract NthPriceAuction{
     struct Bid {
         address bidder;
         uint value;
-        uint256 timestamp;
+        uint timestamp;
     }
 
     // List of the top N bids.
@@ -34,20 +34,9 @@ contract NthPriceAuction{
     // Mapping to bids to return to store bidders that did not win. 
     mapping(address => uint) bidsToReturn;
 
-    // TODO: Cases where there are ties - I think already covered by our list.
-    // TODO: Cases where there are not enough buyers
-    // TODO: Collusion 
-
-    // TODO: Get events added/working.
-    // Events - to log when the auction has ended
-    //event AuctionEnded(address winners, uint ___);
-
     // Modifier to ensure this action occurs within the timeframe of the auction.
     modifier withinAuction {
-        require(
-            block.timestamp >= auctionStartTime && block.timestamp <= auctionEndTime,
-            "Bid is not within auction timeframe"
-        );
+        require(block.timestamp <= auctionEndTime, "Bid is not within auction timeframe");
         _;
     }
 
@@ -62,8 +51,8 @@ contract NthPriceAuction{
         require(numItems > 0);
 
         sellerAddress = seller;
-        auctionStartTime = block.timestamp;
-        auctionEndTime = auctionStartTime + durationSeconds;
+        uint startTime = block.timestamp;
+        auctionEndTime = startTime.add(durationSeconds);
         numItemsToAuction = numItems;
         auctionEnded = false;
         smallestTopNBidsIndex = 0;
@@ -101,10 +90,6 @@ contract NthPriceAuction{
             return false;
         }
 
-        //TODO: Using minIndex because I think it is cheaper to update
-        // a memory variable than a storage variable so we only
-        // update smallestTopNBidsIndex after the loop.
-
         // Find the new smallest of the top N bids.
         uint minIndex = 0;
         for (uint i = 1; i < topNBids.length; i++) {
@@ -135,14 +120,11 @@ contract NthPriceAuction{
         // Set bool so that auction can only be ended once.    
         auctionEnded = true;
 
-        // TODO: Emit events.
-        //emit AuctionEnded(winners, ___);
-
         // Transfer Ether to the beneficiary, in the amount of
         // the smallest of the top N bids times the number of
         // bidders in the top N bids list.
         if (topNBids.length > 0) {
-            uint amountToTransfer = topNBids[smallestTopNBidsIndex].value * topNBids.length;
+            uint amountToTransfer = topNBids[smallestTopNBidsIndex].value.mul(topNBids.length);
             sellerAddress.transfer(amountToTransfer);
         }
 
@@ -150,7 +132,7 @@ contract NthPriceAuction{
         // the price they paid (which was the smallest of the top N bids),
         // to the bidsToReturn mapping.
         for (uint i = 0; i < topNBids.length; i++) {
-            uint remainderToReturn = topNBids[i].value - topNBids[smallestTopNBidsIndex].value;
+            uint remainderToReturn = topNBids[i].value.sub(topNBids[smallestTopNBidsIndex].value);
             bidsToReturn[topNBids[i].bidder] = remainderToReturn;
         }
     }
