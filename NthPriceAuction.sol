@@ -26,6 +26,9 @@ contract NthPriceAuction{
     // List of the top N bids.
     Bid[] topNBids;
 
+    // Mapping to keep track of all bids that occurred.
+    mapping(address => uint) bidsMapping;
+
     // Mapping to bids to return to store bidders that did not win. 
     mapping(address => uint) bidsToReturn;
 
@@ -39,7 +42,10 @@ contract NthPriceAuction{
 
     // Modifier to ensure this action occurs within the timeframe of the auction.
     modifier withinAuction {
-        require(block.timestamp >= auctionStartTime && block.timestamp <= auctionEndTime);
+        require(
+            block.timestamp >= auctionStartTime && block.timestamp <= auctionEndTime,
+            "Bid is not within auction timeframe"
+        );
         _;
     }
 
@@ -63,7 +69,11 @@ contract NthPriceAuction{
 
     // Payable function that allows someone to send Ether to make a bid.
     function bid() public payable withinAuction {
-        // TODO: Does using payable mean it requires non-zero Ether to be sent?
+        require(msg.value > 0, "Bid must be greater than 0");
+        require(bidsMapping[msg.sender] == 0, "Sorry you can only bid once");
+
+        // Save bid in bidsMapping.
+        bidsMapping[msg.sender] = msg.value;
 
         // Save bid parameters in a struct object.
         Bid memory newBid = Bid(msg.sender, msg.value, block.timestamp);
