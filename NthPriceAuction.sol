@@ -2,6 +2,7 @@
 
 pragma solidity ^0.8.0;
 
+import "./NthPriceAuctionToken.sol";
 import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/release-v4.4/contracts/utils/math/SafeMath.sol";
 
 contract NthPriceAuction{
@@ -17,6 +18,10 @@ contract NthPriceAuction{
     bool public auctionEnded;
     // Index for the smallest of the top N bids.
     uint smallestTopNBidsIndex;
+    // Token for the item being auctioned.
+    NthPriceAuctionToken token;
+    // Address of the token.
+    address public tokenAddress;
 
     // Bid structure used to store info about a bid that was placed.
     struct Bid {
@@ -44,13 +49,11 @@ contract NthPriceAuction{
     // Function to create an auction of `numItems` items,
     // for 'durationSeconds' seconds, on behalf of the
     // beneficiary address of `seller`.
-
-    // TODO: Add metadata for item to be auctioned.
-
     constructor (
         address payable seller,
         uint durationSeconds,
-        uint numItems
+        uint numItems,
+        string memory tokenURI
     ) {
         require(numItems > 0);
 
@@ -60,8 +63,10 @@ contract NthPriceAuction{
         numItemsToAuction = numItems;
         auctionEnded = false;
         smallestTopNBidsIndex = 0;
-
-        // TODO: Deploy token contract and mint numItemsToAuction tokens.
+        
+        //Create the NthPriceAuctionToken and save its address.
+        token = new NthPriceAuctionToken(tokenURI);
+        tokenAddress = address(token);
     }
 
     // Payable function that allows someone to send Ether to make a bid.
@@ -141,10 +146,9 @@ contract NthPriceAuction{
             uint remainderToReturn = topNBids[i].value.sub(topNBids[smallestTopNBidsIndex].value);
             bidsToReturn[topNBids[i].bidder] = remainderToReturn;
 
-            // TODO: Award a token to each winner.
+            //Award a token to each winner.
+            token.mint(topNBids[i].bidder, 1);
         }
-
-        // TODO: Burn remaining tokens.
     }
 
     // Function for users that did not win to use to receive their bids
