@@ -73,6 +73,7 @@ contract NthPriceAuction{
     function bid() public payable withinAuction returns (bool) {
         require(msg.value > 0, "Bid must be greater than 0");
         require(bidsMapping[msg.sender] == 0, "Sorry you can only bid once");
+        require(msg.sender != sellerAddress, "Seller cannot bid in auction");
 
         // Save bid in bidsMapping.
         bidsMapping[msg.sender] = msg.value;
