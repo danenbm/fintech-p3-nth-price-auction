@@ -8,7 +8,12 @@ Key Points of Auction Logic:
 * Multiple items (N items) can be up for auction
 * The top N bidders pay the price that is the lowest bid out of the top N
 
-The winning bidder will receive a token
+Pro's of Auction:
+* Encourages true value, willingness of what people want to pay
+* Resistant to over and under bidding, competitive bidding wars
+* No incentive to bid higher or lower
+* Less cost and fees
+* All bidders submit bids simultaneously
 ---
 
 ## References
