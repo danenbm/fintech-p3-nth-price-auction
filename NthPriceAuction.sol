@@ -105,10 +105,12 @@ contract NthPriceAuction{
         // Find the new smallest of the top N bids.
         uint minIndex = 0;
         for (uint i = 1; i < topNBids.length; i++) {
-            // Using less than or equal here so that if there are duplicates,
-            // the newer bid is the one that is set to be the minIndex,
-            // which means the newer bid will be overwritten by a new bid
-            // that outbids its value.
+            // Using less than or equal here so that if there are duplicates
+            // in the topNBids list, the newer one gets marked as the minIndex.
+            // In this way, the newest duplicate is the one that will be replaced
+            // by a higher bid.  As duplicate bids are outbid, the newest
+            // duplicates are replaced before the older duplicates.  The older
+            // duplicate bids are prioritized as winners.
             if (topNBids[i].value <= topNBids[minIndex].value) {
                 minIndex = i;
             }
