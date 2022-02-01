@@ -1,6 +1,6 @@
 # Modified Vickrey Auction - Nth Price Sealed Bid
 
-This smart contract implements decentralized multi-user price discovery marketplace auction. The auction awards one to the N items to the top N bidders at the price of the Nth highest bid.
+This smart contract implements a decentralized multi-user price discovery marketplace auction. The auction awards 1 to N items to the top N bidders at the price of the Nth highest bid.
 
 Key Points of Auction Logic:
 * Sealed Auction which means bidders can't see each other's bids
