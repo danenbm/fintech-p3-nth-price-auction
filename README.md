@@ -1,6 +1,6 @@
 # Modified Vickrey Auction - Nth Price Sealed Bid
 
-This smart contract implements a decentralized multi-user price discovery marketplace auction. At the close of the bidding period, the auction awards 1 item to each of the top N bidders, at the price of the Nth highest bid.
+This Ethereum smart contract implements a multi-user price discovery auction, based on the Vickrey Auction definition. The awarded item or items are represented by one or more ERC-1155 tokens.  When the auction ends, the smart contract awards one item to each of the top N bidders at the price of the Nth highest bid, where N is the number of items up for auction.
 
 Key Points of Auction Logic:
 * Sealed Auction which means bidders can't see each other's bids
